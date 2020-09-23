@@ -133,9 +133,6 @@ others:
 1.添加已有的ssh key私钥
 
 依次执行以下命令：
-
- 
-
 exec ssh-agent bash
 eval ssh-agent -s
 ssh-add "C:\Users\Administrator\.ssh\id_rsa"
