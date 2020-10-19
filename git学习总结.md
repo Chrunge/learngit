@@ -1,9 +1,27 @@
+---
+title: Git笔记
+top: true
+cover: false
+toc: true
+mathjax: true
+date: 2020-09-28 18:44:16
+password:
+summary: Git工具学习笔记
+tags:
+- Git
+categories:
+- 编程语言
+---
+
+
 # learngit
 ## 1. **介绍:**
 
 Git是最先进的分布式版本控制系统,用来记录每次文件的改动.
 集中式管理系统:拥有一个中央服务器,每次下载和上传改动都需要联网
 分布式管理系统:没有中央服务器,每台电脑上都有一个完整的版本库,但通常也有一台充当"中央服务器"的电脑,以方便大家交换. 
+
+比喻:每次add则提交一次局部的风景图，commit则是把全部风景图整合起来形成全景图，最后放入保险箱中。
 
 
 ## 2. **创建版本库**
@@ -15,18 +33,17 @@ Git是最先进的分布式版本控制系统,用来记录每次文件的改动.
 ## 3. **git命令**
 1. 初始化一个Git仓库，使用git init命令。
 2. 添加文件到Git仓库，分两步：
-    使用命令git add <file> 或者 git add *，注意，可反复多次使用，添加多个文件；
+    使用命令git add <file>，注意，可反复多次使用，添加多个文件；
     使用命令git commit -m <annotation>，可一次提交多个文件。
 
-3. 要随时掌握工作区的状态，使用git status命令。如果git status告诉你有文件被修改过，用git diff可以查看修改内容。
+3. 要随时掌握工作区的状态，使用git status命令。如果git status告知修改过的文件，用git diff可以查看修改内容。
 4. HEAD指向的版本是当前版本;我们可以使用git reset --hard commit_id在不同版本之间穿梭(commit代表快照)
 5. 穿梭前，用git log可以查看提交历史，以便确定要回退到哪个版本。要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
 
 
 
 ## 4. **工作区和暂存区**
-1. git目录分为工作区和版本库(.git目录),版本库中有stage(暂缓区)和master分支(仓库),指向master的一
-2. 个指针是HEAD. 
+1. git目录分为工作区和版本库(.git目录),版本库中有stage(暂缓区)和master分支(仓库),指向master的一个指针是HEAD. 
 提交修改:
 2. git add:工作区>>>暂缓区
 3. git commit: 暂缓区>>>仓库(若commit前再一次修改了文件,而没有add,则不会提交最新版本,只会提交当前修改版本). 
@@ -34,15 +51,13 @@ Git是最先进的分布式版本控制系统,用来记录每次文件的改动.
 5. git diff --cached 查看暂存区和仓库的差异
 6. git diff HEAD 查看工作区和仓库的差异
 
-### **撤销修改:**
-1. 场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout -- file(暂存区替换工作区),相当于git add file 的反向命令.
-   - 如readme.txt自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
-   - 如readme.txt已添加到暂存区，然后又作了修改，则撤销修改就是把暂存区替换工作区。
+#### **撤销修改:**
+1. 场景1：git checkout -- [file](暂存区替换工作区), 相当于 git add file 的反向命令.
 
 2. 场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时。想丢弃修改，分两步：
-    - 第一步用命令git reset HEAD <file>(相当于git commit 的反向命令，就回到了场景1，第二步按场景1操作。
+    - 第一步用命令git reset HEAD [file](相当于git commit 的反向命令), 然后git checkout -- [file]。
 
-### **删除文件:**
+#### **删除文件:**
 1. 删除文件:rm file --> git rm file(提交到暂缓区) -->git commit -m <annotation>
 2. 不小心删除文件:rm file --> git checkout -- file (暂存区替换工作区)
 3. 不小心删除文件:git rm file --> git reset HEAD file -->git checkout -- file(不推荐此种删除方式)
@@ -64,19 +79,20 @@ Git是最先进的分布式版本控制系统,用来记录每次文件的改动.
 
 7. 使用GitHub,首先fork别人的仓库到自己的仓库,然后从自己的仓库中克隆到本地,再进行修改.如果完功能后提交到自己的仓库,再pull request到他人的仓库(将修改提交给他人)
 
-### **多人协作:**
+#### **多人协作:**
 1. 试图用git push origin <branch-name>推送自己的修改;
-2. 如果远程分支比本地分支更新,则推送失败->使用git pull尝试自动合并
-3. 如果合并有冲突,则解决冲突,并在本地提交,最后成功推送
+2. 如果远程分支比本地分支更新,则推送失败->使用git pull尝试自动合并;
+3. git pull --rebase origin master:拉取远程仓库,更新本地仓库,然后commit覆盖它
+4. 如果合并有冲突,则解决冲突,并在本地提交,最后成功推送
 notes:
-   - 如果git pull提示no tracking information,则说明本地分支比远程分支的链接关系没有创建,用命令 git branch --set-upstream-to <branch-name> origin/<branch-name>
+   - **如果git pull提示no tracking information,则说明本地分支比远程分支的链接关系没有创建,用 git branch --set-upstream-to <branch-name> origin/<branch-name> 创建链接关系 **
    - git checkout -b dev origin/dev基于远程分支创建本地分支
 
 
 
 ## 6. **分支管理:**
    - 创建属于自己的分支,在开放一个功能完毕之后,再一次性合并到原来的分支上. 
-### 1. HEAD是一个指针,它指向master指针,而master指针指向master主分支. 如果创建并切换到dev分支,则HEAD指向dev指针,dev指针指向dev支线.  
+#### 1. HEAD是一个指针,它指向master指针,而master指针指向master主分支. 如果创建并切换到dev分支,则HEAD指向dev指针,dev指针指向dev支线.  
 
     查看分支树:git branch
     创建分支: git branch <name>
@@ -86,11 +102,11 @@ notes:
     删除分支: git branch -d <name>
     强行删除未合并的分支:git branch -D <name>
 
-### 2. **解决冲突:**
+#### 2. **解决冲突:**
 当git无法合并分支时,需要手动编辑合并失败的文件,然后在提交
 git log --graph (--pretty=oneline --abbrev-commit)可以查看分支的合并图. 
 
-### 3. **分支管理策略:**
+#### 3. **分支管理策略:**
 1. git通常会用Fast forward模式,在这种情况下,删除分之后,会丢掉分支信息(git merge <name>)
 2. 使用--no-ff的普通模式进行合并,git会在merge时生成一个新的commit,这就能在分支历史上看出分支信息(git merge --no-ff -m "..." <name>)
 
@@ -145,3 +161,61 @@ git cherry-pick <branch id>: 复制一个特定的提交到当前分支
         exec ssh-agent bash
         eval ssh-agent -s
         ssh-add "C:\Users\Administrator\.ssh\id_rsa"<绝对路径>
+
+
+## 11. **A brief about command**
+   This is the foundation of git. To summarize, using our photo analogy:
+
+    git init: Creates a box in which to permanently store panoramic pictures.
+    git add: Takes a temporary photo of one thing that can be assembled into a panoramic photo later.
+    git commit: Assembles all available temporary photos into a panoramic photo. Also destroys all temporary photos.
+    git log: Lists all the panoramic photos we’ve ever taken.
+    git show: Looks at what is in a particular panoramic photo.
+    git checkout: Rearranges files back to how they looked in a given panoramic photo. Does not affect the panormiac photos in your box in any way.
+    git status: Determining the exact status of each file in your repository.
+
+    
+
+    git add -A: stages all changes
+    git add .: stages new files and modifications, without deletion
+    git add -u: stages modifications and deletions, without new files
+
+
+    修改或者回退：
+    git add [forgetten-file];git commit --amend:Amend latest commit (changing commit message or add forgotten files): 
+    git reset HEAD [file]: Unstage a file that you haven’t yet committed
+    git checkout -- [file]: Revert a file to its state at the time of the most recent commit
+    git checkout commit_id: Back to the commit_id the auto add 
+
+
+
+    分支：
+    git branch [new-branch-name]:The following command will create a branch off of your current branch.
+    git checkout [destination-branch]: This command lets you switch from one branch to another by changing which branch your HEAD pointer references.
+    git checkout -b [new-branch-name]: You can combine the previous two commands on creating a new branch and then checking it out with this single command:
+    git branch -d: [branch-to-delete]:You can delete branches.
+    git branch -v: You can easily figure out which branch you are on.
+   
+    合并分支:you should checkout the master branch and merge fixing-ai-heuristics into master.
+    git checkout master
+    git merge fixing-ai-heuristics
+
+    远程:
+    git clone [remote-repo-URL]: Makes a copy of the specified repository, but on your local computer. Also creates a working directory that has files arranged exactly like the most recent snapshot in the download repository. Also records the URL of the remote repository for subsequent network data transfers, and gives it the special remote-repo-name “origin”.
+    git remote add [remote-repo-name] [remote-repo-URL]: Records a new location for network data transfers.
+    git remote -v: Lists all locations for network data transfers.
+    git pull [remote-repo-name] master: Get the most recent copy of the files as seen in remote-repo-name
+    git push [remote-repo-name] master: Pushes the most recent copy of your files to the remote-repo-name.
+
+    git remote add [short-name] [remote-url]:[for example]:git remote add origin git@github.com:berkeley-cs61b/skeleton.git
+    git remote rename [old-name] [new-name]:You can rename your remote.
+    git remote rm [remote-name]:remove a remote.
+    git remote -v: list remotes.
+
+    For a more particular example, let’s say that your partner creates a new branch on the remote called fixing-ai-heuristics. You can view that branch’s commits with the following steps:
+    $ git fetch origin
+    $ git branch review-ai-fix origin/fixing-ai-heuristics:The second command creates a new branch called review-ai-fix that tracks the fixing-ai-heuristics branch on the origin remote.
+    $ git checkout review-ai-fix
+
+    git pull --rebase origin master:The changes from the server will be applied onto your working copy and your commit will be stacked on top.(拉取远程仓库,更新本地仓库,然后你的commit再覆盖它)
+
