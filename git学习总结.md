@@ -1,0 +1,147 @@
+# learngit
+## 1. **介绍:**
+
+Git是最先进的分布式版本控制系统,用来记录每次文件的改动.
+集中式管理系统:拥有一个中央服务器,每次下载和上传改动都需要联网
+分布式管理系统:没有中央服务器,每台电脑上都有一个完整的版本库,但通常也有一台充当"中央服务器"的电脑,以方便大家交换. 
+
+
+## 2. **创建版本库**
+1. 所有的版本控制系统,其实只能追踪文本文件的改动,如txt文件,网页,所有的程序代码. 
+
+
+
+
+## 3. **git命令**
+1. 初始化一个Git仓库，使用git init命令。
+2. 添加文件到Git仓库，分两步：
+    使用命令git add <file> 或者 git add *，注意，可反复多次使用，添加多个文件；
+    使用命令git commit -m <annotation>，可一次提交多个文件。
+
+3. 要随时掌握工作区的状态，使用git status命令。如果git status告诉你有文件被修改过，用git diff可以查看修改内容。
+4. HEAD指向的版本是当前版本;我们可以使用git reset --hard commit_id在不同版本之间穿梭(commit代表快照)
+5. 穿梭前，用git log可以查看提交历史，以便确定要回退到哪个版本。要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
+
+
+
+## 4. **工作区和暂存区**
+1. git目录分为工作区和版本库(.git目录),版本库中有stage(暂缓区)和master分支(仓库),指向master的一
+2. 个指针是HEAD. 
+提交修改:
+2. git add:工作区>>>暂缓区
+3. git commit: 暂缓区>>>仓库(若commit前再一次修改了文件,而没有add,则不会提交最新版本,只会提交当前修改版本). 
+4. git diff 查看工作区和暂存区差异
+5. git diff --cached 查看暂存区和仓库的差异
+6. git diff HEAD 查看工作区和仓库的差异
+
+### **撤销修改:**
+1. 场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout -- file(暂存区替换工作区),相当于git add file 的反向命令.
+   - 如readme.txt自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
+   - 如readme.txt已添加到暂存区，然后又作了修改，则撤销修改就是把暂存区替换工作区。
+
+2. 场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时。想丢弃修改，分两步：
+    - 第一步用命令git reset HEAD <file>(相当于git commit 的反向命令，就回到了场景1，第二步按场景1操作。
+
+### **删除文件:**
+1. 删除文件:rm file --> git rm file(提交到暂缓区) -->git commit -m <annotation>
+2. 不小心删除文件:rm file --> git checkout -- file (暂存区替换工作区)
+3. 不小心删除文件:git rm file --> git reset HEAD file -->git checkout -- file(不推荐此种删除方式)
+
+
+
+## 5. **git远程库:**
+1. 要关联一个远程库，使用命令git remote add origin git@server-name:path/repo-name.git；
+2. 第一次推送:关联后，使用命令git push -u origin master第一次推送master分支的所有内容；
+3. 推送:此后，每次本地提交后，只要有必要，就可以使用命令git push origin master推送最新修改；
+
+4. 克隆远程库: git clone git@github:path/repo-name.git
+5. 查看远程库:git remote [-v] (-v 代表详细信息)
+6. 
+   - master分支是主分支，因此要时刻与远程同步；
+   - dev分支是开发分支，团队所有成员都需要在上面工作，所以也需要与远程同步；
+   - bug分支只用于在本地修复bug，就没必要推到远程了，除非老板要看看你每周到底修复了几个bug；
+   - feature分支是否推到远程，取决于你是否和你的小伙伴合作在上面开发。
+
+7. 使用GitHub,首先fork别人的仓库到自己的仓库,然后从自己的仓库中克隆到本地,再进行修改.如果完功能后提交到自己的仓库,再pull request到他人的仓库(将修改提交给他人)
+
+### **多人协作:**
+1. 试图用git push origin <branch-name>推送自己的修改;
+2. 如果远程分支比本地分支更新,则推送失败->使用git pull尝试自动合并
+3. 如果合并有冲突,则解决冲突,并在本地提交,最后成功推送
+notes:
+   - 如果git pull提示no tracking information,则说明本地分支比远程分支的链接关系没有创建,用命令 git branch --set-upstream-to <branch-name> origin/<branch-name>
+   - git checkout -b dev origin/dev基于远程分支创建本地分支
+
+
+
+## 6. **分支管理:**
+   - 创建属于自己的分支,在开放一个功能完毕之后,再一次性合并到原来的分支上. 
+### 1. HEAD是一个指针,它指向master指针,而master指针指向master主分支. 如果创建并切换到dev分支,则HEAD指向dev指针,dev指针指向dev支线.  
+
+    查看分支树:git branch
+    创建分支: git branch <name>
+    切换分支:git checkout <name> or git switch <name>
+    创建并切换分支: git checkout -b <name> 或 git switch -c <name>
+    合并分支到当前分支: git merge <name>
+    删除分支: git branch -d <name>
+    强行删除未合并的分支:git branch -D <name>
+
+### 2. **解决冲突:**
+当git无法合并分支时,需要手动编辑合并失败的文件,然后在提交
+git log --graph (--pretty=oneline --abbrev-commit)可以查看分支的合并图. 
+
+### 3. **分支管理策略:**
+1. git通常会用Fast forward模式,在这种情况下,删除分之后,会丢掉分支信息(git merge <name>)
+2. 使用--no-ff的普通模式进行合并,git会在merge时生成一个新的commit,这就能在分支历史上看出分支信息(git merge --no-ff -m "..." <name>)
+
+3. **分支策略:**
+master分支非常稳定,用来发布版本;
+干活都在dev分支上,每个人都从dev分支上创建自己的分支,然后再提交到dev分支上,
+
+4. **Bug分支:**
+   1. 在一个任务期间,须完成一个新任务:
+```
+git stash:保留一个现场->然后去完成新任务
+git stash list:列出所有现场
+git stash apply <stash@{id}> :恢复现场,现场列表中依旧存在该现场,即没有删除栈顶
+git stash dorp <stash@{id}>: 删除现场
+git stash pop: 弹出现场,已删除栈顶
+git cherry-pick <branch id>: 复制一个特定的提交到当前分支
+```
+
+
+## 7. **标签管理**
+1. 发布一个版本时,通常给该版本打一个标签(tag),就唯一确定了打标签时刻的版本;
+ 	git的标签也相当于版本库的快照(和commit类似),且标签和commit_id对应. 
+2. 打标签:git tag <tag-name> [<commit_id>]
+3. 查看标签:git tag;查看标签信息:git show <tag-name>
+4. 创建带有说明的标签，用-a指定标签名，-m指定说明文字：
+ 	git tag -a v0.1 -m "version 0.1 released" 1094adb
+5. 删除标签:git tag -d <tag-name>
+6. 推送标签至远程:git push origin <tag-name>;一次性推送全部标签:git push origin --tags
+7. 删除远程标签:先从本地删除(git tag -d <tag-nanme>),再从远程删除:git push origin :refs/tags/<tag-name>
+
+
+
+## 8. **忽略特殊文件:**
+1. 添加一个.gitignore文件,写入需要忽略的文件名.
+2. git add -f <filename> :强制add一个文件(针对于被忽略却想添加的文件)
+3. git check-ignore -v <filename>:检查.gitignore文件错误(针对于被忽略的却想添加的文件)
+4. gitignore文件本身要放到版本库里，并且可以对.gitignore做版本管理！
+
+
+
+## 9. **配置别名**
+1. 如将status 改为st: git config --global  alias.st status
+	将'reset HEAD'改为unstage: git config --global alias.unstage 'reset HEAD'
+	(--global对当前用户起作用,不加则对当前仓库起作用)
+2. 查看每个仓库的git配置: cat .git/config
+3. 查看每个用户的git配置: cat .gitconfig(目录为c:/users/计算机名称)
+ 
+
+## 10. **添加已有的ssh key私钥**
+- 依次执行以下命令：
+
+        exec ssh-agent bash
+        eval ssh-agent -s
+        ssh-add "C:\Users\Administrator\.ssh\id_rsa"<绝对路径>
